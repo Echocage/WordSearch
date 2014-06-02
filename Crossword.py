@@ -30,32 +30,31 @@ class Puzzle:
 
     def place_item(self, word, __recursion_level=0):
         if __recursion_level < 10:
-            horizontal = 0
+            horizontal = random.randint(0,1)
             grid = self.grid
             if horizontal:
                 # region Word Sideways
                 y = random.randint(0, len(grid) - 1)
                 x = random.randint(0, self.width - len(word))
-                to_be_taken = range(x, x + len(word))
-                for row, taken_column in self.taken:
-                    if row == y:
-                        conflicting = [grid_letter for grid_letter in taken_column if
-                                       any([new_letter for new_letter in to_be_taken if grid_letter == new_letter])]
-                        if any(conflicting):
-                            self.place_item(word, __recursion_level + 1)
-                            return
+                to_be_taken = [[temp, y] for temp in range(x, x + len(word))]
+                for taken_temp in self.taken:
+                    if taken_temp in to_be_taken:
+                        self.place_item(word, __recursion_level + 1)
+                        return
                 grid[y] = grid[y][:x] + word + grid[y][x + len(word):]
-                #endregion
+                # endregion
             else:
                 # region Word Vertical
                 y = random.randint(0, (len(grid) - 1) - len(word))
-                x = random.randint(0, self.width-1)
-                to_be_taken = range(xrange(y,y+len(word)), x)
+                x = random.randint(0, self.width - 1)
+                to_be_taken = [[x, temp] for temp in range(y, y + len(word))]
+                for taken_temp in self.taken:
+                    if taken_temp in to_be_taken:
+                        self.place_item(word, __recursion_level + 1)
+                        return
                 for row in xrange(y, y + len(word)):
-                    grid[row] = grid[row][:x] + word[row-y] + grid[row][x+1:]
-
-                #endregion
-            self.taken.append([y, to_be_taken])
+                    grid[row] = grid[row][:x] + word[row - y] + grid[row][x + 1:]
+            self.taken +=to_be_taken
 
         else:
             return
@@ -64,7 +63,7 @@ class Puzzle:
         return self.format_puzzle()
 
 
-p = Puzzle(20, 20, ['John', 'Dog', 'Cat', 'Mouse', 'Hat', 'Shoe', 'Rabbit'])
+p = Puzzle(15, 15, ['John', 'Dog', 'Cat', 'Mouse', 'Hat', 'Shoe', 'Rabbit'])
 
 for i in p.word_list:
     p.place_item(i.lower())
