@@ -57,7 +57,6 @@ class Puzzle:
                     y = random.randint(0, (self.height - 1) - len(word))
                     x = random.randint(0, self.width - len(word))
                     to_be_taken = [[y + num, temp] for num, temp in enumerate(range(x, x + len(word)))]
-            # endregion
             for taken_temp in self.taken:
                 if taken_temp in to_be_taken:
                     self.place_item(word, __recursion_level + 1)
