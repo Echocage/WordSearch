@@ -1,7 +1,5 @@
 import random
 
-words = ["john", "blue", "pancakes", "eggs"]
-
 
 class Puzzle:
     def __init__(self, word_list, width=15, height=15, empty_char='-'):
@@ -39,7 +37,7 @@ class Puzzle:
                 y = random.randint(0, self.height - 1)
                 x = random.randint(0, self.width - len(word))
                 to_be_taken = [[y, temp] for temp in range(x, x + len(word))]
-                #endregion
+                # endregion
             elif direction == 1:
                 # region Vertical word handling
                 y = random.randint(0, (self.height - 1) - len(word))
