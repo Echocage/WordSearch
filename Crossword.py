@@ -2,9 +2,8 @@ import random
 
 words = ["john", "blue", "pancakes", "eggs"]
 
-
 class Puzzle:
-    def __init__(self, width, height, word_list, empty_char='-'):
+    def __init__(self, word_list, width=15, height=15, empty_char='-'):
         self.empty_char = empty_char
         self.width = width
         self.height = height
@@ -20,7 +19,6 @@ class Puzzle:
                     lst[letter_number] = chr(random.randint(ord('a'), ord('z')))
                     self.grid[row_number] = ''.join(lst)
 
-
     def format_puzzle(self):
         formatted = ""
         for row in self.grid:
@@ -31,22 +29,33 @@ class Puzzle:
 
     def place_item(self, word, __recursion_level=0):
         if __recursion_level < 10:
-            horizontal = random.randint(0, 1)
+            direction = random.randint(0, 2)
             backwards = random.randint(0, 1)
             grid = self.grid
-            if horizontal:
+            if direction == 0:
                 # region Word Sideways
-                y = random.randint(0, len(grid) - 1)
+                y = random.randint(0, self.height - 1)
                 x = random.randint(0, self.width - len(word))
-                to_be_taken = [[temp, y] for temp in range(x, x + len(word))]
+                to_be_taken = [[y, temp] for temp in range(x, x + len(word))]
                 # endregion
-            else:
+            elif direction == 1:
                 # region Word Vertical
-                y = random.randint(0, (len(grid) - 1) - len(word))
+                y = random.randint(0, (self.height - 1) - len(word))
                 x = random.randint(0, self.width - 1)
-                to_be_taken = [[x, temp] for temp in range(y, y + len(word))]
+                to_be_taken = [[temp, x] for temp in range(y, y + len(word))]
                 # endregion
-
+            elif direction == 2:
+                # region Word Vertical
+                diagonal_direction = random.randint(0, 1)
+                if diagonal_direction:  # up
+                    y = random.randint(len(word), (self.height - 1))
+                    x = random.randint(0, self.width - len(word))
+                    to_be_taken = [[y - num, temp] for num, temp in enumerate(range(x, x + len(word)))]
+                else:  # down
+                    y = random.randint(0, (self.height - 1) - len(word))
+                    x = random.randint(0, self.width - len(word))
+                    to_be_taken = [[y + num, temp] for num, temp in enumerate(range(x, x + len(word)))]
+                    # endregion
             for taken_temp in self.taken:
                 if taken_temp in to_be_taken:
                     self.place_item(word, __recursion_level + 1)
@@ -54,8 +63,7 @@ class Puzzle:
             if backwards:
                 word = word[::-1]
             for num, (y, x) in enumerate(to_be_taken):
-                grid[y] = grid[y][:x] + word[num] + grid[y][x+1:]
-
+                grid[y] = grid[y][:x] + word[num] + grid[y][x + 1:]
             self.taken += to_be_taken
 
         else:
@@ -65,9 +73,12 @@ class Puzzle:
         return self.format_puzzle()
 
 
-p = Puzzle(15, 15, ['John', 'Dog', 'Cat', 'Mouse', 'Hat', 'Shoe', 'Rabbit'])
+puzzle = Puzzle(['John', 'Dog', 'chair', 'car', 'tree', 'fish', 'phone', 'pirate', 'bat', 'ball', 'desk', 'wallet', 'spoon',
+            'washing', 'microwave', 'shed', 'motherboard'], width=15, height=15)
 
-for i in p.word_list:
-    p.place_item(i.lower())
+for i in puzzle.word_list:
+    puzzle.place_item(i.lower())
+puzzle.randomize_list()
 
-print p
+print puzzle
+
